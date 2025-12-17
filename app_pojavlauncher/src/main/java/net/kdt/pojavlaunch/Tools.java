@@ -129,7 +129,6 @@ public final class Tools {
     public static String DIR_ACCOUNT_NEW;
     public static String DIR_GAME_HOME = Environment.getExternalStorageDirectory().getAbsolutePath() + "/games/Amethyst";
     public static String DIR_GAME_NEW;
-    public static String GAME_PROFILES_FILE;
 
     // New since 3.0.0
     public static String DIRNAME_HOME_JRE = "lib";
@@ -212,8 +211,6 @@ public final class Tools {
         OBSOLETE_RESOURCES_PATH = DIR_GAME_NEW + "/resources";
         CTRLMAP_PATH = DIR_GAME_HOME + "/controlmap";
         CTRLDEF_FILE = DIR_GAME_HOME + "/controlmap/default.json";
-        GAME_PROFILES_FILE = Tools.DIR_GAME_NEW + "/launcher_profiles.json";
-        switchDemo(isDemoProfile(ctx));
     }
 
     @SuppressLint("PrivateApi")
@@ -707,7 +704,7 @@ public final class Tools {
     }
 
     public static String[] getMinecraftClientArgs(MinecraftAccount profile, JMinecraftVersionList.Version versionInfo, File gameDir) {
-        String username = profile.username.replace("Demo.", "");
+        String username = profile.username;
         String versionName = versionInfo.id;
         if (versionInfo.inheritsFrom != null) {
             versionName = versionInfo.inheritsFrom;
@@ -752,13 +749,13 @@ public final class Tools {
             }
         }
 
-        String mcArguments = versionInfo.minecraftArguments == null ?
-                fromStringArray(minecraftArgs.toArray(new String[0])):
-                versionInfo.minecraftArguments;
-
-        if(profile.isDemo()) mcArguments += " --demo";
-
-        return JSONUtils.insertJSONValueList(splitAndFilterEmpty(mcArguments), varArgMap);
+        return JSONUtils.insertJSONValueList(
+                splitAndFilterEmpty(
+                        versionInfo.minecraftArguments == null ?
+                                fromStringArray(minecraftArgs.toArray(new String[0])):
+                                versionInfo.minecraftArguments
+                ), varArgMap
+        );
     }
 
     public static String fromStringArray(String[] strArr) {
@@ -1668,6 +1665,7 @@ public final class Tools {
                     }
                 }).show();
     }
+<<<<<<< HEAD
 
     public static void switchDemo(boolean isDemo){
         if(isDemo) {
@@ -1815,4 +1813,6 @@ public final class Tools {
          */
         public static native void initializeControllerSubsystems();
     }
+=======
+>>>>>>> parent of a6f3fc060 (New demo mode and local mode reimplementation (#6819))
 }
