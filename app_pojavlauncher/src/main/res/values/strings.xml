@@ -259,7 +259,7 @@
     <string name="main_add_account">Add account</string>
     <string name="tasks_ongoing">Tasks are in progress, please wait</string>
     <string name="no_saved_accounts">No saved accounts</string>
-    <string name="mc_download_failed">Failed to download Minecraft! This could be due to bad network connection, incorrectly placed files, trying to download Minecraft from a Local account, etc..</string>
+    <string name="mc_download_failed">Failed to download Minecraft! This could be due to bad network connection, incorrectly placed files, etc..</string>
     <string name="xerr_unknown">Unknown Xbox Live API error %d</string>
     <string name="xerr_no_account">You don\'t seem to have an Xbox Live account. Please log in once on https://minecraft.net/ and try again.</string>
     <string name="xerr_adult_verification">An adult needs to verify your account.</string>
@@ -439,6 +439,7 @@
     <string name="bta_installer_untested_versions">Untested BTA versions</string>
     <string name="bta_installer_nightly_versions">Nightly BTA versions</string>
     <string name="newdl_extracting_native_libraries">Extracting native libraries (%d/%d)</string>
+<<<<<<< HEAD
     <string name="toast_not_available_demo">This is not available in demo mode</string>
 
     <string name="preference_renderer_mobileglues_settings">MobileGlues Renderer Settings</string>
@@ -490,21 +491,6 @@
     <string name="mg_renderer_title_fsr">AMD FSR 1 Upscaling</string>
     <string name="autorendererselectfailed">Auto-renderer select failed, defaulting to HolyGL4ES</string>
     <string name="mcl_setting_renderer_vulkan_kopper_zink">Kopper Zink (Vulkan) - (all versions, mid)</string>
-    <string name="sodium_warning_title">Sodium detected!</string>
-    <string name="sodium_warning_message">It appears you are using sodium, this is unsupported and may lead to graphical issues or crashes. Please remove it and all dependent mods.</string>
-    <string name="delete_sodium">Delete Sodium and Launch</string>
-    <string name="sodium_override_title">Run sodium forcefully</string>
-    <string name="sodium_override_summaryOff">Using sodium may cause visual bugs and crashes. You have been warned.</string>
-    <string name="sodium_override_summaryOn">Sodium is not supported. No help will be given if you encounter any issues.</string>
-    <!--  Make sure the people turning this on can read English.  -->
-    <string name="sodium_math_warning_title" translatable="false">Solve the math question to enable</string>
-    <string name="sodium_math_warning_message" translatable="false">
-    Sodium is unsupported, you are on your own. No support will be given in the discord server.\nUsing sodium may result in bugs, glitches, and crashes. No help will be given even if you lose any of your worlds or saves.\n\nNow what\'s %1$s multiplied by %2$s plus %3$s minus %4$s?
-    </string>
-    <string name="not_modpack_file">Not a modpack file!</string>
-    <string name="global_not_installed">Not Installed</string>
-    <string name="global_download">Download</string>
-    <string name="multirt_no_internet">Failed to download, check your internet connection.</string>
-    <string name="global_installing">Installing…</string>
-
+=======
+>>>>>>> parent of a6f3fc060 (New demo mode and local mode reimplementation (#6819))
 </resources>

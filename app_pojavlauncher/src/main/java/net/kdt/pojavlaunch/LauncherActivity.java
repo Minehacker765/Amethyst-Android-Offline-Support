@@ -50,15 +50,12 @@ import net.kdt.pojavlaunch.services.ProgressServiceKeeper;
 import net.kdt.pojavlaunch.tasks.AsyncMinecraftDownloader;
 import net.kdt.pojavlaunch.tasks.AsyncVersionList;
 import net.kdt.pojavlaunch.tasks.MinecraftDownloader;
-import net.kdt.pojavlaunch.utils.DateUtils;
 import net.kdt.pojavlaunch.utils.NotificationUtils;
 import net.kdt.pojavlaunch.value.launcherprofiles.LauncherProfiles;
 import net.kdt.pojavlaunch.value.launcherprofiles.MinecraftProfile;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.security.NoSuchAlgorithmException;
-import java.text.ParseException;
 
 public class LauncherActivity extends BaseActivity {
     public static final String SETTING_FRAGMENT_TAG = "SETTINGS_FRAGMENT";
@@ -155,6 +152,7 @@ public class LauncherActivity extends BaseActivity {
         }
         String normalizedVersionId = AsyncMinecraftDownloader.normalizeVersionId(prof.lastVersionId);
         JMinecraftVersionList.Version mcVersion = AsyncMinecraftDownloader.getListedVersion(normalizedVersionId);
+<<<<<<< HEAD
 
         // Do not load when is a modded version or older than minecraft 1.3 on demo account
         if (mAccountSpinner.getSelectedAccount().isDemo()) {
@@ -172,6 +170,8 @@ public class LauncherActivity extends BaseActivity {
             }
         }
 
+=======
+>>>>>>> parent of a6f3fc060 (New demo mode and local mode reimplementation (#6819))
         new MinecraftDownloader().start(
                 this,
                 mcVersion,
