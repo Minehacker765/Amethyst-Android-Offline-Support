@@ -58,7 +58,7 @@ public class MinecraftDownloader {
     private File mSourceJarFile; // The source client JAR picked during the inheritance process
     private File mTargetJarFile; // The destination client JAR to which the source will be copied to.
     private boolean mUseFileCounter; // Whether a file counter or a size counter should be used for progress
-
+    private boolean isOnline;
     private static final ThreadLocal<byte[]> sThreadLocalDownloadBuffer = new ThreadLocal<>();
 
     /**
@@ -71,6 +71,7 @@ public class MinecraftDownloader {
     public void start(@Nullable Activity activity, @Nullable JMinecraftVersionList.Version version,
                       @NonNull String realVersion,
                       @NonNull AsyncMinecraftDownloader.DoneListener listener) {
+        if(activity != null) isOnline = Tools.isOnline(activity);
         sExecutorService.execute(() -> {
             try {
                 downloadGame(activity, version, realVersion);
@@ -466,7 +467,7 @@ public class MinecraftDownloader {
             File cacheFile = new File(sha1CacheDir.getAbsolutePath() + FileUtils.getFileName(mTargetUrl) + ".sha");
 
             // Only use cache when its offline. No point in having cache invalidation now!
-            if (!Tools.isOnline(activity) || !LauncherPreferences.PREF_CHECK_LIBRARY_SHA) { // Well not only offlines..this setting speeds up launch times at least!
+            if (!isOnline || !LauncherPreferences.PREF_CHECK_LIBRARY_SHA) { // Well not only offlines..this setting speeds up launch times at least!
                 try (BufferedReader cacheFileReader = new BufferedReader(new FileReader(cacheFile))) {
                     mTargetSha1 = cacheFileReader.readLine();
                     if (mTargetSha1 != null) {
