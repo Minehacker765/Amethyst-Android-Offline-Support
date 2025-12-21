@@ -36,30 +36,12 @@ public class ProfileTypeSelectFragment extends Fragment {
         view.findViewById(R.id.modded_profile_fabric).setOnClickListener((v)->
                 Tools.swapFragment(requireActivity(), FabricInstallFragment.class, FabricInstallFragment.TAG, null));
         view.findViewById(R.id.modded_profile_forge).setOnClickListener((v)->
-<<<<<<< HEAD
-                tryInstall(ForgeInstallFragment.class, ForgeInstallFragment.TAG));
-        view.findViewById(R.id.modded_profile_neoforge).setOnClickListener((v)->
-                tryInstall(NeoForgeInstallFragment.class, NeoForgeInstallFragment.TAG));
-=======
                 Tools.swapFragment(requireActivity(), ForgeInstallFragment.class, ForgeInstallFragment.TAG, null));
->>>>>>> parent of a6f3fc060 (New demo mode and local mode reimplementation (#6819))
         view.findViewById(R.id.modded_profile_modpack).setOnClickListener((v)->
                 Tools.swapFragment(requireActivity(), SearchModFragment.class, SearchModFragment.TAG, null));
         view.findViewById(R.id.modded_profile_quilt).setOnClickListener((v)->
                 Tools.swapFragment(requireActivity(), QuiltInstallFragment.class, QuiltInstallFragment.TAG, null));
         view.findViewById(R.id.modded_profile_bta).setOnClickListener((v)->
-<<<<<<< HEAD
-                tryInstall(BTAInstallFragment.class, BTAInstallFragment.TAG));
-    }
-
-    private void tryInstall(Class<? extends Fragment> fragmentClass, String tag){
-        if(!hasOnlineProfile()){
-            hasNoOnlineProfileDialog(requireActivity());
-        } else {
-            Tools.swapFragment(requireActivity(), fragmentClass, tag, null);
-        }
-=======
                 Tools.swapFragment(requireActivity(), BTAInstallFragment.class, BTAInstallFragment.TAG, null));
->>>>>>> parent of a6f3fc060 (New demo mode and local mode reimplementation (#6819))
     }
 }
