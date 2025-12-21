@@ -466,7 +466,7 @@ public class MinecraftDownloader {
             File cacheFile = new File(sha1CacheDir.getAbsolutePath() + FileUtils.getFileName(mTargetUrl) + ".sha");
 
             // Only use cache when its offline. No point in having cache invalidation now!
-            if (!isOnline || !LauncherPreferences.PREF_CHECK_LIBRARY_SHA) { // Well not only offlines..this setting speeds up launch times at least!
+            if (!Tools.isOnline(activity) || !LauncherPreferences.PREF_CHECK_LIBRARY_SHA) { // Well not only offlines..this setting speeds up launch times at least!
                 try (BufferedReader cacheFileReader = new BufferedReader(new FileReader(cacheFile))) {
                     mTargetSha1 = cacheFileReader.readLine();
                     if (mTargetSha1 != null) {
