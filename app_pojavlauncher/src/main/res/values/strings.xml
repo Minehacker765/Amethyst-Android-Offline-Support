@@ -439,7 +439,6 @@
     <string name="bta_installer_untested_versions">Untested BTA versions</string>
     <string name="bta_installer_nightly_versions">Nightly BTA versions</string>
     <string name="newdl_extracting_native_libraries">Extracting native libraries (%d/%d)</string>
-<<<<<<< HEAD
     <string name="toast_not_available_demo">This is not available in demo mode</string>
 
     <string name="preference_renderer_mobileglues_settings">MobileGlues Renderer Settings</string>
@@ -491,6 +490,4 @@
     <string name="mg_renderer_title_fsr">AMD FSR 1 Upscaling</string>
     <string name="autorendererselectfailed">Auto-renderer select failed, defaulting to HolyGL4ES</string>
     <string name="mcl_setting_renderer_vulkan_kopper_zink">Kopper Zink (Vulkan) - (all versions, mid)</string>
-=======
->>>>>>> parent of a6f3fc060 (New demo mode and local mode reimplementation (#6819))
 </resources>
