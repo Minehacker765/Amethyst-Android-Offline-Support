@@ -1687,7 +1687,7 @@ public final class Tools {
     }
 
     public static boolean isDemoProfile(Context ctx){
-        return false
+        return false;
     }
 
     public static boolean isLocalProfile(Context ctx){
