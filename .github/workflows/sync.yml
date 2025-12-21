@@ -28,4 +28,4 @@ jobs:
         run: |
           git checkout v3_openjdk
           git rebase -X theirs upstream/v3_openjdk
-          git push origin v3_openjdk
+          git push -f origin v3_openjdk
