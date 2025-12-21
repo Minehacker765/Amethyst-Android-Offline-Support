@@ -10,6 +10,9 @@ on:
       - 'l10n_v3_openjdk'
   workflow_dispatch:
 
+permissions:
+  contents: write
+  
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -107,5 +110,34 @@ jobs:
       - name: Upload release APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-release
-          path: out/app-release.*
+          name: app-release-aab
+          path: out/app-gplay.aab
+
+      - name: Upload onto the Google Play testing track
+        continue-on-error: true
+        if: github.repository_owner == 'PojavLauncherTeam' && github.ref_name == 'v3_openjdk'
+        uses: r0adkll/upload-google-play@v1.1.2
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GPLAY_SERVICE_JSON }}
+          packageName: net.kdt.pojavlaunch
+          releaseFiles: out/app-gplay.aab
+          track: internal
+          inAppUpdatePriority: 5
+
+      - name: Upload APK (without runtime)
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-noruntime
+          path: out/app-debug-noruntime.*
+
+      - name: Release APKs
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            out/app-debug.apk
+            out/app-debug.md5
+            out/app-debug-noruntime.apk
+            out/app-debug-noruntime.md5
+          generate_release_notes: true
+          draft: false
+          prerelease: false
