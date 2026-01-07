@@ -129,9 +129,15 @@ jobs:
           name: app-debug-noruntime
           path: out/app-debug-noruntime.*
 
+      - name: Set tag
+        id: tag
+        run: echo "TAG_NAME=v$(date +'%Y.%m.%d.%H%M')" >> $GITHUB_ENV
+
       - name: Release APKs
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ env.TAG_NAME }}
+          name: ${{ env.TAG_NAME }}
           files: |
             out/app-debug.apk
             out/app-debug.md5
