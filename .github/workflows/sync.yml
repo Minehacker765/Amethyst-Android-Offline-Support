@@ -28,5 +28,5 @@ jobs:
       - name: Merge Changes and Push
         run: |
           git checkout v3_openjdk
-          git rebase -X theirs upstream/v3_openjdk
-          git push -f origin v3_openjdk
+          git merge upstream/v3_openjdk -m "Sincronizando con upstream"
+          git push origin v3_openjdk
