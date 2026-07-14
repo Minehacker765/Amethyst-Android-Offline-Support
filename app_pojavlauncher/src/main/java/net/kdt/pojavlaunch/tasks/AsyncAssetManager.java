@@ -12,9 +12,9 @@ import android.util.Log;
 
 import com.kdt.mcgui.ProgressLayout;
 
-import net.kdt.pojavlaunch.Architecture;
 import net.kdt.pojavlaunch.Tools;
 import net.kdt.pojavlaunch.multirt.MultiRTUtils;
+import net.kdt.pojavlaunch.prefs.LauncherPreferences;
 
 import org.apache.commons.io.FileUtils;
 
@@ -67,7 +67,17 @@ public class AsyncAssetManager {
         sExecutorService.execute(() -> {
             try {
                 Tools.copyAssetFile(ctx, "options.txt", Tools.DIR_GAME_NEW, false);
-                Tools.copyAssetFile(ctx, "default.json", Tools.CTRLMAP_PATH, false);
+
+                // This is disgusting, but am lazy. We probably wont be getting any updates to
+                // controlmap till rewrite anyway so this is fiiine.
+                try (InputStream is = ctx.getAssets().open("default.json")) {
+                    String assetSha1 = new String(org.apache.commons.codec.binary.Hex.encodeHex(org.apache.commons.codec.digest.DigestUtils.sha1(is)));
+                    if (!Tools.compareSHA1(new File(Tools.CTRLDEF_FILE), assetSha1)) {
+                        Tools.copyAssetFile(ctx, "default.json", Tools.CTRLMAP_PATH, "new_default.json" , false);
+                        // Be annoying and set their default to the new one heehee
+                        LauncherPreferences.DEFAULT_PREF.edit().putString("defaultCtrl", Tools.CTRLMAP_PATH+"/new_default.json").apply();
+                    } else Tools.copyAssetFile(ctx, "default.json", Tools.CTRLMAP_PATH, false);
+                }
 
                 Tools.copyAssetFile(ctx, "launcher_profiles.json", Tools.DIR_GAME_NEW, false);
                 Tools.copyAssetFile(ctx,"resolv.conf",Tools.DIR_DATA, false);
