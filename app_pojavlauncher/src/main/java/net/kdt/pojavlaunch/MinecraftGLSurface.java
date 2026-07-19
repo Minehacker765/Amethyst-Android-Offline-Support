@@ -15,7 +15,6 @@ import android.graphics.SurfaceTexture;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.Display;
 import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -44,8 +43,10 @@ import net.kdt.pojavlaunch.utils.JREUtils;
 import net.kdt.pojavlaunch.utils.MCOptionUtils;
 import net.kdt.pojavlaunch.utils.TouchControllerUtils;
 
+import org.libsdl.app.SDL;
 import org.libsdl.app.SDLActivity;
 import org.libsdl.app.SDLControllerManager;
+import org.libsdl.app.SDLSurface;
 import org.lwjgl.glfw.CallbackBridge;
 
 
@@ -84,6 +85,7 @@ public class MinecraftGLSurface extends View implements GrabListener, DirectGame
     final Object mSurfaceReadyListenerLock = new Object();
     /* View holding the surface, either a SurfaceView or a TextureView */
     View mSurface;
+    Surface mNativeSurface;
     String TAG = "MinecraftGLSurface";
 
     private final InGameEventProcessor mIngameProcessor = new InGameEventProcessor(mSensitivityFactor);
@@ -102,13 +104,22 @@ public class MinecraftGLSurface extends View implements GrabListener, DirectGame
         super(context, attributeSet);
         setFocusable(true);
         CallbackBridge.setDirectGamepadEnableHandler(this);
-        SDLControllerManager.setDirectGamepadEnableHandler(this);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void setUpPointerCapture(AbstractTouchpad touchpad) {
         if(mPointerCapture != null) mPointerCapture.detach();
         mPointerCapture = new AndroidPointerCapture(touchpad, this);
+    }
+    protected static View.OnGenericMotionListener motionListener = (v, event) -> false;
+    private static void setupSDL(Context ctx, Surface nativeSurface, ViewGroup layout){
+        SDLSurface surface = new SDLSurface(ctx);
+        motionListener = SDLActivity.getMotionListener();
+        // Sets up the Java side, must be done here or else it might run on a non-looper thread
+        // which crashes the SDLCommandHandler
+        org.libsdl.app.SDL.initialize();
+        SDL.setContext((MainActivity) ctx);
+        SDLActivity.externalInitialize(surface, layout, nativeSurface);
     }
 
     /** Initialize the view and all its settings
@@ -127,18 +138,19 @@ public class MinecraftGLSurface extends View implements GrabListener, DirectGame
         if(useSurfaceView){
             SurfaceView surfaceView = new SurfaceView(getContext());
             mSurface = surfaceView;
-
+            mNativeSurface = surfaceView.getHolder().getSurface();
+            setupSDL(getContext(), mNativeSurface, (ViewGroup) getParent());
             surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
                 private boolean isCalled = isAlreadyRunning;
                 @Override
                 public void surfaceCreated(@NonNull SurfaceHolder holder) {
                     if(isCalled) {
-                        JREUtils.setupBridgeWindow(surfaceView.getHolder().getSurface());
+                        JREUtils.setupBridgeWindow(mNativeSurface);
                         return;
                     }
                     isCalled = true;
 
-                    realStart(surfaceView.getHolder().getSurface());
+                    realStart(mNativeSurface);
                 }
 
                 @Override
@@ -169,14 +181,15 @@ public class MinecraftGLSurface extends View implements GrabListener, DirectGame
                 private boolean isCalled = isAlreadyRunning;
                 @Override
                 public void onSurfaceTextureAvailable(@NonNull SurfaceTexture surface, int width, int height) {
-                    Surface tSurface = new Surface(surface);
+                    mNativeSurface = new Surface(surface);
+                    setupSDL(getContext(), mNativeSurface, (ViewGroup) getParent());
                     if(isCalled) {
-                        JREUtils.setupBridgeWindow(tSurface);
+                        JREUtils.setupBridgeWindow(mNativeSurface);
                         return;
                     }
                     isCalled = true;
 
-                    realStart(tSurface);
+                    realStart(mNativeSurface);
                 }
 
                 @Override
@@ -245,11 +258,11 @@ public class MinecraftGLSurface extends View implements GrabListener, DirectGame
     }
 
     private void createGamepad(View contextView, InputDevice inputDevice) {
-        if(CallbackBridge.sGamepadDirectInput && !sdlEnabled) {
+        if (CallbackBridge.sGamepadDirectInput) {
             mGamepadHandler = new DirectGamepad();
-        }else if(!sdlEnabled) {
+        } else if (!sdlEnabled) {
             mGamepadHandler = new Gamepad(contextView, inputDevice, DefaultDataProvider.INSTANCE, true);
-        }else mGamepadHandler = (code, value) -> {}; // Ensure it isn't null while also not processing the events.
+        }
     }
 
     /**
@@ -262,18 +275,17 @@ public class MinecraftGLSurface extends View implements GrabListener, DirectGame
             final MotionEvent copy = MotionEvent.obtain(event);
             PojavApplication.sExecutorService.execute(()->{
                 try {
-                    MainActivity.motionListener.onGenericMotion(this, copy);
+                    motionListener.onGenericMotion(this, copy);
                     copy.recycle();
                 } catch (Throwable ignored) {
                     Log.e(TAG, "SDL failed to send motionevent!");
                 }
             });
-            return true;
         }
         super.dispatchGenericMotionEvent(event);
         int mouseCursorIndex = -1;
 
-        if(!sdlEnabled && Gamepad.isGamepadEvent(event)){
+        if(Gamepad.isGamepadEvent(event)){
             if(mGamepadHandler == null) createGamepad(this, event.getDevice());
 
             mInputManager.handleMotionEventInput(getContext(), event, mGamepadHandler);
@@ -356,9 +368,8 @@ public class MinecraftGLSurface extends View implements GrabListener, DirectGame
                     Log.e(TAG, "SDL failed to send keyevent!");
                 }
             });
-            return true;
         }
-        if(!sdlEnabled && isGamepadEvent){
+        if(isGamepadEvent){
             if(mGamepadHandler == null) createGamepad(this, event.getDevice());
 
             mInputManager.handleKeyEventInput(getContext(), event, mGamepadHandler);
@@ -389,6 +400,12 @@ public class MinecraftGLSurface extends View implements GrabListener, DirectGame
                 break;
             case MotionEvent.BUTTON_SECONDARY:
                 glfwButton = LwjglGlfwKeycode.GLFW_MOUSE_BUTTON_RIGHT;
+                break;
+            case MotionEvent.BUTTON_BACK:
+                glfwButton = LwjglGlfwKeycode.GLFW_MOUSE_BUTTON_4;
+                break;
+            case MotionEvent.BUTTON_FORWARD:
+                glfwButton = LwjglGlfwKeycode.GLFW_MOUSE_BUTTON_5;
                 break;
         }
         if(glfwButton == -256) return false;

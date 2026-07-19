@@ -7,7 +7,7 @@ static def getDate() { return new Date().format('yyyyMMdd') }
 def getVersionName = {
     // Get the last version tag, as well as the short head of the last commit
     ByteArrayOutputStream TAG = new ByteArrayOutputStream()
-    String semVer = "1.1.5"
+    String semVer = "1.1.6"
     // Used by the fallback for github actions
     ByteArrayOutputStream TAG_PART_COMMIT = new ByteArrayOutputStream()
     String TAG_STRING
@@ -235,6 +235,6 @@ dependencies {
 
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
 
-    implementation "net.java.dev.jna:jna:5.13.0@aar"
+    implementation "net.java.dev.jna:jna:5.14.0@aar"
 
 }

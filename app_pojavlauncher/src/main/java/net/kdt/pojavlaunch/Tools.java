@@ -616,15 +616,15 @@ public final class Tools {
             String TAG = "OldLegacy4JMitigation";
             Log.i(TAG, "Legacy4J detected!");
             oldL4JMitigationLogListener = loggedLine -> {
-                if (LauncherPreferences.PREF_GAMEPAD_SDL_PASSTHRU && loggedLine.contains("literal{SDL3 (isXander's libsdl4j)} isn't supported in this system. GLFW will be used instead.")) {
-                    Log.i(TAG, "Old version of Legacy4J detected! Force enabling SDL");
+                if (loggedLine.contains("literal{SDL3 (isXander's libsdl4j)} isn't supported in this system. GLFW will be used instead.")) {
+                    Logger.appendToLog("Amethyst-Android: Broken version of Legacy4J (below 1.8.51.8.5.2537.1) detected! Force enabling SDL");
                     Tools.SDL.initializeControllerSubsystems();
                     Tools.runOnUiThread(() -> {
                         Tools.dialog(activity, activity.getString(R.string.global_warning), activity.getString(R.string.oldL4JFound));
                     });
                     Logger.removeLogListener(oldL4JMitigationLogListener);
-                } else if (LauncherPreferences.PREF_GAMEPAD_SDL_PASSTHRU && loggedLine.contains("Added SDL Controller Mappings")) {
-                    Log.i(TAG, "Fixed version of Legacy4J detected! Have fun!");
+                } else if (loggedLine.contains("Added SDL Controller Mappings")) {
+                    Logger.appendToLog("Amethyst-Android: Fixed version of Legacy4J (1.8.5.2537.1 or higher) detected! Have fun!");
                     Logger.removeLogListener(oldL4JMitigationLogListener);
                 }
             };
@@ -882,10 +882,16 @@ public final class Tools {
         String internalLwjglVersion = iLwjglVersion >= 341 ? "3.4.1" : "3.3.3";
         File lwjgl3Folder = new File(Tools.DIR_GAME_HOME, "lwjgl3/"+internalLwjglVersion);
         String lwjglCore = lwjgl3Folder.getAbsolutePath() + "/lwjgl.jar";
-        String lwjglMerged = lwjgl3Folder.getAbsolutePath() + "/lwjgl-"+internalLwjglVersion+"-merged-modules";
+        String lwjglMerged = lwjgl3Folder.getAbsolutePath() + "/lwjgl-"+internalLwjglVersion+"-merged-modules.jar";
         String lwjglxFile = lwjgl3Folder + "/lwjgl-lwjglx.jar";
 
-
+        if (!new File(lwjglCore).exists() || !new File(lwjglMerged).exists() || !new File(lwjglxFile).exists()) {
+            try { // Delete the folder so on restart will re-extract them.
+                if (lwjgl3Folder.exists())
+                    org.apache.commons.io.FileUtils.deleteDirectory(lwjgl3Folder);
+            } catch (IOException ignored) {}
+            throw new RuntimeException("LWJGL jars incomplete, restart the app to reextract them.");
+        }
         launchClasspath.append(lwjglCore).append(":");
         // 2nd in priority in case we need to merge lwjgl.jar again for testing
         launchClasspath.append(lwjglMerged).append(":");

@@ -39,8 +39,6 @@ public class LauncherPreferences {
     public static final String PREF_VERSION_REPOS = "https://piston-meta.mojang.com/mc/game/version_manifest_v2.json";
     public static boolean PREF_CHECK_LIBRARY_SHA = true;
     public static boolean PREF_DISABLE_GESTURES = false;
-    public static boolean PREF_GAMEPAD_SDL_PASSTHRU = false;
-    public static boolean PREF_GAMEPAD_FORCEDSDL_PASSTHRU = false;
     public static boolean PREF_DISABLE_SWAP_HAND = false;
     public static float PREF_MOUSESPEED = 1f;
     public static int PREF_RAM_ALLOCATION;
@@ -87,12 +85,9 @@ public class LauncherPreferences {
         PREF_MOUSESPEED = ((float)DEFAULT_PREF.getInt("mousespeed",100))/100f;
         PREF_IGNORE_NOTCH = DEFAULT_PREF.getBoolean("ignoreNotch", false);
 		PREF_LONGPRESS_TRIGGER = DEFAULT_PREF.getInt("timeLongPressTrigger", 300);
-		PREF_DEFAULTCTRL_PATH = DEFAULT_PREF.getString("defaultCtrl", Tools.CTRLDEF_FILE);
         PREF_FORCE_ENGLISH = DEFAULT_PREF.getBoolean("force_english", false);
         PREF_CHECK_LIBRARY_SHA = DEFAULT_PREF.getBoolean("checkLibraries",true);
         PREF_DISABLE_GESTURES = DEFAULT_PREF.getBoolean("disableGestures",false);
-        PREF_GAMEPAD_SDL_PASSTHRU = DEFAULT_PREF.getBoolean("gamepadPassthru",false);
-        PREF_GAMEPAD_FORCEDSDL_PASSTHRU = DEFAULT_PREF.getBoolean("gamepadPassthruForced",false);
         PREF_DISABLE_SWAP_HAND = DEFAULT_PREF.getBoolean("disableDoubleTap", false);
         PREF_RAM_ALLOCATION = DEFAULT_PREF.getInt("allocation", findBestRAMAllocation(ctx));
         PREF_CUSTOM_JAVA_ARGS = DEFAULT_PREF.getString("javaArgs", "");
@@ -121,6 +116,10 @@ public class LauncherPreferences {
         PREF_TOUCHCONTROLLER_VIBRATE_LENGTH = DEFAULT_PREF.getInt("touchControllerVibrateLength", 100);
         PREF_MOUSE_GRAB_FORCE = DEFAULT_PREF.getBoolean("always_grab_mouse", false);
         PREF_KEYBOARD_PANNING = DEFAULT_PREF.getBoolean("keyboardPanning", true);
+
+        // User may have deleted their default control
+        String userDefCtrl = DEFAULT_PREF.getString("defaultCtrl", Tools.CTRLDEF_FILE);
+        PREF_DEFAULTCTRL_PATH = FileUtils.exists(userDefCtrl) ? userDefCtrl : Tools.CTRLDEF_FILE;
 
         String argLwjglLibname = "-Dorg.lwjgl.opengl.libname=";
         for (String arg : JREUtils.parseJavaArguments(PREF_CUSTOM_JAVA_ARGS)) {

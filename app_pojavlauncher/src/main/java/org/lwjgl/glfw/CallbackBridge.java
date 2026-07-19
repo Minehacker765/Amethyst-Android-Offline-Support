@@ -8,9 +8,14 @@ import android.content.*;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Choreographer;
+import android.view.MotionEvent;
 
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
+
+import org.libsdl.app.SDL;
+import org.libsdl.app.SDLActivity;
+import org.libsdl.app.SDLSurface;
 
 import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
@@ -56,6 +61,9 @@ public class CallbackBridge {
         mouseX = x;
         mouseY = y;
         nativeSendCursorPos(mouseX, mouseY);
+        // HOVER_MOVE and MOVE are equivalent in SDL
+        if (MinecraftGLSurface.sdlEnabled)
+            SDLActivity.onNativeMouse(0, MotionEvent.ACTION_MOVE, x, y, false);
     }
 
     /**
@@ -117,6 +125,8 @@ public class CallbackBridge {
     public static void sendMouseKeycode(int button, int modifiers, boolean isDown) {
         // if (isGrabbing()) DEBUG_STRING.append("MouseGrabStrace: " + android.util.Log.getStackTraceString(new Throwable()) + "\n");
         nativeSendMouseButton(button, isDown ? 1 : 0, modifiers);
+        if (MinecraftGLSurface.sdlEnabled)
+            SDLActivity.onNativeMouse(button, isDown ? MotionEvent.ACTION_DOWN : MotionEvent.ACTION_UP, mouseX, mouseY, false);
     }
 
     public static void sendMouseKeycode(int keycode) {
@@ -160,6 +170,39 @@ public class CallbackBridge {
         }
     }
 
+    // Notification types
+    private static final int SDL = 0;
+
+    // Notification actions
+    private static final int INIT = 0;
+    /**
+     * Used for any sort of notification that needs to be given from the JRE side
+     * @return if notification successful
+     */
+    // Called from JRE side via jni
+    @SuppressWarnings("unused")
+    @Keep
+    public static boolean notifyLauncher(int type, int... action) {
+        switch (type) {
+            case SDL:
+                if (action[0] == INIT) {
+                    // We need to load this ourselves because some mods skip loading it due to
+                    // broken logic somewhere.
+                    System.loadLibrary("SDL3");
+                    System.loadLibrary("SDL2");
+                    org.libsdl.app.SDL.setupJNI();
+                    onDirectInputEnable();
+                    MinecraftGLSurface.sdlEnabled = true;
+                    if (SDLActivity.getSDLSurface() != null) {
+                        // Notifies SDL of native surface res which is needed for proper input handling
+                        SDLActivity.getSDLSurface().surfaceChanged();
+                    }
+                    Logger.appendToLog("Amethyst-Android: SDL support enabled!");
+                    return true;
+                }
+        }
+        return false;
+    }
 
     public static int getCurrentMods() {
         int currMods = 0;

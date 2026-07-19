@@ -47,7 +47,8 @@ LOCAL_LDLIBS := -ldl -llog
 LOCAL_SHARED_LIBRARIES := bytehook pojavexec
 LOCAL_SRC_FILES := \
     native_hooks/exit_hook.c \
-    native_hooks/chmod_hook.c
+    native_hooks/chmod_hook.c \
+    native_hooks/sdl_hook.c
 include $(BUILD_SHARED_LIBRARY)
 
 #ifeq ($(TARGET_ARCH_ABI),arm64-v8a)

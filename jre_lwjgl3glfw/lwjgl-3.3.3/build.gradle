@@ -18,19 +18,23 @@ dependencies {
 jar {
     // Modules to copy over to the components directory instead of patching and merging
     String[] excludedModules = [
-            "lwjgl-lwjglx.jar",
-            "lwjgl.jar",
             "jsr305.jar",
+            "lwjgl.jar",
             "lwjgl-freetype.jar",
+//            "lwjgl-glfw.jar",
+            "lwjgl-lwjglx.jar",
             "lwjgl-jemalloc.jar",
             "lwjgl-nanovg.jar",
             "lwjgl-openal.jar",
+//            "lwjgl-opengl.jar",
+            "lwjgl-sdl.jar",
+            "lwjgl-shaderc.jar",
+            "lwjgl-spng.jar",
+            "lwjgl-spvc.jar",
             "lwjgl-stb.jar",
             "lwjgl-tinyfd.jar",
-            "lwjgl-shaderc.jar",
-            "lwjgl-spvc.jar",
             "lwjgl-vma.jar",
-            "lwjgl-vulkan.jar"
+            "lwjgl-vulkan.jar",
     ]
 
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE

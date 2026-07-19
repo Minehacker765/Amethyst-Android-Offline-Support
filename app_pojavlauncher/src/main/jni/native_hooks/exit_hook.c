@@ -41,6 +41,7 @@ static void create_hooks(bytehook_hook_all_t bytehook_hook_all_p) {
     if(android_get_device_api_level() < 29) {
         create_chmod_hooks(bytehook_hook_all_p);
     }
+    create_sdl_hooks(bytehook_hook_all_p);
 }
 
 static bool init_hooks() {
